@@ -1,32 +1,33 @@
 {
-  "name": "mongo-scraper",
-  "version": "1.0.0",
-  "description": "Mongo news scraper homework",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zdayar/MongoScraper.git"
-  },
-  "keywords": [
-    "express",
-    "cheerio",
-    "request",
-    "mongoose"
-  ],
-  "author": "Zeynep Dayar",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.18.2",
-    "cheerio": "^0.20.0",
-    "express": "^4.16.1",
-    "mongoose": "^4.12.0",
-    "request": "^2.69.0"
-  },
-  "bugs": {
-    "url": "https://github.com/zdayar/MongoScraper/issues"
-  },
-  "homepage": "https://github.com/zdayar/MongoScraper#readme"
+    "name": "mongo-scraper",
+    "version": "1.0.0",
+    "description": "Mongo news scraper homework",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zdayar/MongoScraper.git"
+    },
+    "keywords": [
+        "express",
+        "cheerio",
+        "request",
+        "mongoose"
+    ],
+    "author": "Zeynep Dayar",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "cheerio": "^0.20.0",
+        "express": "^4.16.1",
+        "mongoose": "^4.12.0",
+        "request": "^2.69.0"
+    },
+    "bugs": {
+        "url": "https://github.com/zdayar/MongoScraper/issues"
+    },
+    "homepage": "https://github.com/zdayar/MongoScraper#readme"
 }
