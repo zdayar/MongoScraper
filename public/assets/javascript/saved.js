@@ -110,7 +110,7 @@ $(document).ready(function () {
     }
 
     function handleArticleNotes() {
-        // This function handles opending the notes modal and displaying our notes
+        // This function handles opening the notes modal and displaying our notes
         // We grab the id of the article to get notes for from the panel element the delete button sits inside
         var currentArticle = $(this).parents(".panel").data();
         // Grab any notes with this headline/article id

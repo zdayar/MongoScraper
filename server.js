@@ -9,15 +9,14 @@ var request = require("request");
 // Require all models
 var db = require("./models");
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Initialize Express
 var app = express();
 
-// Configure middleware
-
 // Use body-parser for handling form submissions
 app.use(bodyParser.urlencoded({extended: false}));
+
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
 
@@ -28,7 +27,8 @@ mongoose.connect("mongodb://localhost/BBCNewsScrape", {
     useMongoClient: true
 });
 
-// Routes
+///////////////////////////////////////////////////////////////
+// ROUTES
 ///////////////////////////////////////////////////////////////
 // A GET route for scraping the BBC News website
 app.get("/api/fetch", function (req, res) {
@@ -95,6 +95,7 @@ app.get("/api/fetch", function (req, res) {
                 message = addedCount + " new article(s) just added!";
             }
 
+            // send message back
             res.json({message: message});
         }, 1500);
 
@@ -114,7 +115,6 @@ app.get("/api/headlines", function (req, res) {
         // If an error occurs, send the error back to the client
         res.json(err);
     });
-
 });
 
 ////////////////////////////////////////////////////////////////////
@@ -132,11 +132,93 @@ app.put("/api/headlines/", function (req, res) {
 
 });
 
-
 ////////////////////////////////////////////////////////////////////
 // Route for deleting an article on saved articles page
 app.delete("/api/headlines/:_id", function (req, res) {
+    // find the article and delete all its associated notes first
     db.Article
+    .findOne({_id: req.params._id})
+    .populate("notes")
+    .then(function (dbArticle) {
+        dbArticle.notes.forEach(function (note) {
+            db.Note
+            .remove({_id: note._id})
+            .then(function (result) {
+                // deleted a note associated with article
+            })
+            .catch(function (err) {
+                // If an error occurs, send the error back to the client
+                res.json(err);
+            });
+        });
+    })
+    .catch(function (err) {
+        // If an error occurs, send the error back to the client
+        res.json(err);
+    });
+
+    // This is another hack .... sorry.
+    // After any associated notes are deleted, delete the article itself
+    setTimeout(function () {
+        db.Article
+        .remove({_id: req.params._id})
+        .then(function (result) {
+            res.json(result);
+        })
+        .catch(function (err) {
+            // If an error occurs, send the error back to the client
+            res.json(err);
+        });
+    }, 1500);
+});
+
+//////////////////////////////////////////////////////////////////////////
+// Route for getting a specific Article's notes given the Article's id
+app.get("/api/notes/:_id", function (req, res) {
+    // find one article by id using the req.params.id,
+    // and run the populate method with "notes",
+    // respond with the article's associated notes
+    db.Article
+    .findOne({_id: req.params._id})
+    .populate("notes")
+    .then(function (dbArticle) {
+        res.json(dbArticle.notes);
+    })
+    .catch(function (err) {
+        // If an error occurs, send it back to the client
+        res.json(err);
+    });
+});
+
+/////////////////////////////////////////////////////////////////////////////
+// Route for saving a new Note to the db and associating it with an Article
+app.post("/api/notes", function (req, res) {
+    // Create a new Note in the db
+    db.Note
+    .create({noteText: req.body.noteText})
+    .then(function (dbNote) {
+        // If a Note was created successfully, find the associated article and
+        // push the new Note's _id to the Article's `notes` array
+        // { new: true } tells the query that we want it to return the updated Article --
+        // it returns the original by default
+        // Since our mongoose query returns a promise, we can chain another `.then`
+        // which receives the result of the query
+        return db.Article.findOneAndUpdate({_id: req.body._id}, {$push: {notes: dbNote._id}}, {new: true});
+    })
+    .then(function (dbArticle) {
+        // If the Article was updated successfully, send it back to the client
+        res.json(dbArticle);
+    })
+    .catch(function (err) {
+        // If an error occurs, send it back to the client
+        res.json(err);
+    });
+});
+
+////////////////////////////////////////////////////////////////////
+// Route for deleting a note given its id
+app.delete("/api/notes/:_id", function (req, res) {
+    db.Note
     .remove({_id: req.params._id})
     .then(function (result) {
         res.json(result);
@@ -145,53 +227,8 @@ app.delete("/api/headlines/:_id", function (req, res) {
         // If an error occurs, send the error back to the client
         res.json(err);
     });
-
 });
 
-/*
-// Route for grabbing a specific Article by id, populate it with it's note
-app.get("/articles/:id", function (req, res) {
-  // TODO
-  // ====
-  // Finish the route so it finds one article using the req.params.id,
-  // and run the populate method with "note",
-  // then responds with the article with the note included
-  db.Article
-      .findOne({_id: req.params.id})
-      .populate("note")
-      .then(function (dbArticle) {
-        res.json(dbArticle);
-      })
-      .catch(function (err) {
-        // If an error occurs, send it back to the client
-        res.json(err);
-      });
-});
-
-// Route for saving/updating an Article's associated Note
-app.post("/articles/:id", function (req, res) {
-  // TODO
-  // ====
-  // save the new note that gets posted to the Notes collection
-  // then find an article from the req.params.id
-  // and update it's "note" property with the _id of the new note
-  db.Note
-      .create(req.body)
-      .then(function (dbNote) {
-        // If a Note was created successfully, find the article by its id and set it's note field to the new Note's _id
-        // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
-        // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-        return db.Article.findOneAndUpdate({_id: req.params.id}, {$set: {note: dbNote._id}}, {new: true});
-      })
-      .then(function (dbArticle) {
-        // If the Article was updated successfully, send it back to the client
-        res.json(dbArticle);
-      })
-      .catch(function (err) {
-        // If an error occurs, send it back to the client
-        res.json(err);
-      });
-});*/
 
 // Start the server
 app.listen(PORT, function () {
