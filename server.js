@@ -112,7 +112,7 @@ app.get("/api/fetch", function (req, res) {
 
             // send message back
             res.json({message: message});
-        }, 1500);
+        }, 1000);
 
     });
 });
@@ -184,7 +184,7 @@ app.delete("/api/headlines/:_id", function (req, res) {
             // If an error occurs, send the error back to the client
             res.json(err);
         });
-    }, 1500);
+    }, 1000);
 });
 
 /////////////////////////////////////////////////////////////////////////////
