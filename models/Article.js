@@ -18,7 +18,8 @@ var ArticleSchema = new Schema({
     },
     // short summary of article
     summary: {
-        type: String
+        type: String,
+        required: true
     },
     // whether the article is saved or not ... initially false
     saved: {

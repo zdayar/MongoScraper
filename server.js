@@ -35,7 +35,7 @@ else {
 ///////////////////////////////////////////////////////////////
 // ROUTES
 ///////////////////////////////////////////////////////////////
-// A GET route for scraping the BBC News website
+// GET route for scraping the BBC News website
 app.get("/api/fetch", function (req, res) {
     // count of new articles we find in this scrape
     var addedCount = 0;
@@ -107,8 +107,8 @@ app.get("/api/fetch", function (req, res) {
     });
 });
 
-///////////////////////////////////////////////////////////////////
-// Route for getting all saved or not-saved Articles from the db
+//////////////////////////////////////////////////////////////////////
+// GET route for getting all saved or not-saved Articles from the db
 // based on the query parameter ?saved=true or ?saved=false
 app.get("/api/headlines", function (req, res) {
     db.Article
@@ -123,7 +123,7 @@ app.get("/api/headlines", function (req, res) {
 });
 
 ////////////////////////////////////////////////////////////////////
-// Route for saving an article
+// PUT route for saving an article
 app.put("/api/headlines/", function (req, res) {
     db.Article
     .update({_id: req.body._id}, {$set: {saved: true}})
@@ -138,7 +138,7 @@ app.put("/api/headlines/", function (req, res) {
 });
 
 ////////////////////////////////////////////////////////////////////
-// Route for deleting an article on saved articles page
+// DELETE route for deleting an article on saved articles page
 app.delete("/api/headlines/:_id", function (req, res) {
     // find the article and delete all its associated notes first
     db.Article
@@ -177,8 +177,8 @@ app.delete("/api/headlines/:_id", function (req, res) {
     }, 1500);
 });
 
-//////////////////////////////////////////////////////////////////////////
-// Route for getting a specific Article's notes given the Article's id
+/////////////////////////////////////////////////////////////////////////////
+// GET route for getting a specific Article's notes given the Article's id
 app.get("/api/notes/:_id", function (req, res) {
     // find one article by id using the req.params.id,
     // and run the populate method with "notes",
@@ -195,8 +195,8 @@ app.get("/api/notes/:_id", function (req, res) {
     });
 });
 
-/////////////////////////////////////////////////////////////////////////////
-// Route for saving a new Note to the db and associating it with an Article
+///////////////////////////////////////////////////////////////////////////////////
+// POST route for saving a new Note to the db and associating it with an Article
 app.post("/api/notes", function (req, res) {
     // Create a new Note in the db
     db.Note
@@ -221,7 +221,7 @@ app.post("/api/notes", function (req, res) {
 });
 
 ////////////////////////////////////////////////////////////////////
-// Route for deleting a note given its id
+// DELETE route for deleting a note given its id
 app.delete("/api/notes/:_id", function (req, res) {
     db.Note
     .remove({_id: req.params._id})
