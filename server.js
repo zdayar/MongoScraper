@@ -53,12 +53,22 @@ app.get("/api/fetch", function (req, res) {
             // create an empty result object
             var result = {};
 
-            // find the headline and url of the article
+            // find url and headline first
             var $title = $(element).find("h3.media__title a");
-            result.url = "http://www.bbc.com" + $title.attr("href");
+
+            // find the url. If it already includes "http", save as is;
+            // otherwise prepend "http://www.bbc.com"
+            var url = $title.attr("href");
+            if (url.indexOf("http") !== -1) {
+                result.url = url;
+            }
+            else {
+                result.url = "http://www.bbc.com" + url;
+            }
+            // find the headline
             result.headline = $title.text().replace(/^\s+|\s+$/g, '');   // get rid of whitespace and \n, \r
 
-            // find the summary text for the article
+            // next, find the summary text for the article
             var $summary = $(element).find("p.media__summary");
             result.summary = $summary.text().replace(/^\s+|\s+$/g, '');  // get rid of whitespace and \n, \r
 
